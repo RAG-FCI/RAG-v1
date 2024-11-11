@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 const sendButton = document.getElementById("send-button");
 const inputField = document.getElementById("user-input");
-const BASE_URL = "http://127.0.0.1:5000"; // Alterar para o domínio do deploy depois
+const BASE_URL = "https://rag-fci.onrender.com/"; // Alterar para o domínio do deploy depois
 
 sendButton.addEventListener("click", sendMessage);
 inputField.addEventListener("keypress", function (e) {
