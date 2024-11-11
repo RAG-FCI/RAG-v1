@@ -1,13 +1,16 @@
 import os
 from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
-from langchain.embeddings import HuggingFaceEmbeddings
-from langchain.vectorstores import Chroma
+from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain_community.vectorstores import Chroma
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.docstore.document import Document
 from PyPDF2 import PdfReader
 from dotenv import load_dotenv
 import google.generativeai as genai
+
+
+
 
 # Configuração do Flask
 app = Flask(__name__, static_folder="static", template_folder="templates")
@@ -97,4 +100,4 @@ def ragfci():
     return jsonify({"resposta": resposta})
 
 if __name__ == '__main__':
-    app.run(debug=False, host='0.0.0.0', port=5000)
+    app.run(debug=False, host="0.0.0.0", port=5000)
