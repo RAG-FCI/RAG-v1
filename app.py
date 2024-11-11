@@ -95,6 +95,7 @@ def generate_answer(prompt):
 def index():
     return render_template("index.html")
 
+
 # Rota para processar o prompt
 @app.route('/ragfci', methods=['POST'])
 def ragfci():
