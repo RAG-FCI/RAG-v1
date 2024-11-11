@@ -24,15 +24,16 @@ async function sendMessage() {
         inputField.value = '';
         toggleInputState(true);
 
-        try {
-            // Chama a API para gerar a resposta do bot
-            const response = await generateBotResponse(userInput);
-            addMessage(response, "bot"); // Adiciona a resposta do bot ao chat
-        } catch (error) {
-            addMessage(`Erro: ${error}`, "bot"); // Exibe o erro no chat
-        } finally {
-            toggleInputState(false); // Reativa o botão e o campo de entrada
-        }
+    try {
+        // Chama a API para gerar a resposta do bot
+        const response = await generateBotResponse(userInput);
+        addMessage(response, "bot"); // Adiciona a resposta do bot ao chat
+    } catch (error) {
+        console.log(error); // Para depuração adicional
+        addMessage(`Erro: ${error}`, "bot"); // Exibe o erro no chat
+    } finally {
+        toggleInputState(false); // Reativa o botão e o campo de entrada
+    }
     }
 }
 
