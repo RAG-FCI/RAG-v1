@@ -1,2 +1,2 @@
 # Ignore arquivos de configuração sensíveis
-.env
+#.env
