@@ -1,0 +1,23 @@
+# Ignorar diretórios e arquivos temporários
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Ignorar arquivos de configuração do ambiente
+.env
+
+# Ignorar o diretório de pacotes de dependências locais
+venv/
+env/
+*.env
+
+# Ignorar arquivos e diretórios de log
+*.log
+
+# Ignorar arquivos de cache do Docker
+.docker/
+
+# Ignorar o diretório de testes
+#tests/
+
