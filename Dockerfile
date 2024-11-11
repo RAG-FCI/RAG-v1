@@ -1,5 +1,4 @@
-# Use uma imagem base oficial com Python
-FROM python:3.10-slim
+FROM python:3.10-slim as builder
 
 # Defina o diretório de trabalho no contêiner
 WORKDIR /app
@@ -13,14 +12,23 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copie todo o código para o contêiner
 COPY . .
 
-# Configure a variável de ambiente para a chave do Gemini
+RUN python -m pip install -e .
 
-# Define a variável de ambiente no contêiner (o valor será passado no momento da execução)
-ENV GEMINI_API_KEY=""
+# Etapa de produção
+FROM python:3.10-slim
 
+WORKDIR /app
 
-# Exponha a porta que a aplicação Flask usará
+ENV GEMINI_API_KEY=${GEMINI_API_KEY}
+
+COPY --from=builder /app/app.py .
+COPY --from=builder /app/requirements.txt .
+COPY --from=builder /app/chroma_db .
+COPY --from=builder /app/static .
+COPY --from=builder /app/templates .
+
+RUN pip install --no-cache-dir -r requirements.txt
+
 EXPOSE 5000
 
-# Comando para rodar o app, iniciar o aplicativo
 CMD ["python", "app.py"]
