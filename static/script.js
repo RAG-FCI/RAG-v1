@@ -13,7 +13,7 @@ inputField.addEventListener("keypress", function (e) {
     if (e.key === "Enter") sendMessage();
 });
 
-function sendMessage() {
+async function sendMessage() {
     const userInput = inputField.value.trim();
 
     if (userInput) {
@@ -24,17 +24,15 @@ function sendMessage() {
         inputField.value = '';
         toggleInputState(true);
 
-        // Chama a API para gerar a resposta do bot
-        generateBotResponse(userInput)
-            .then(response => {
-                addMessage(response, "bot"); // Adiciona a resposta do bot ao chat
-            })
-            .catch(error => {
-                addMessage(`Erro: ${error}`, "bot"); // Exibe o erro no chat
-            })
-            .finally(() => {
-                toggleInputState(false); // Reativa o botão e o campo de entrada
-            });
+        try {
+            // Chama a API para gerar a resposta do bot
+            const response = await generateBotResponse(userInput);
+            addMessage(response, "bot"); // Adiciona a resposta do bot ao chat
+        } catch (error) {
+            addMessage(`Erro: ${error}`, "bot"); // Exibe o erro no chat
+        } finally {
+            toggleInputState(false); // Reativa o botão e o campo de entrada
+        }
     }
 }
 
@@ -57,26 +55,23 @@ function toggleInputState(isDisabled) {
     inputField.disabled = isDisabled;
 }
 
-function generateBotResponse(input) {
-    return new Promise((resolve, reject) => {
-        fetch(`${BASE_URL}/ragfci`, {
-                method: 'POST',
-                headers: {
-                        'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ prompt: input }),
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`Erro na API: ${response.status} ${response.statusText}`);
-            }
-            return response.json();
-        })
-        .then(data => {
-            resolve(data.resposta); // Retorna a resposta da API
-        })
-        .catch(error => {
-            reject('Erro ao processar o prompt: ' + error.message);
+async function generateBotResponse(input) {
+    try {
+        const response = await fetch(`${BASE_URL}/ragfci`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ prompt: input }),
         });
-    });
+
+        if (!response.ok) {
+            throw new Error(`Erro na API: ${response.status} ${response.statusText}`);
+        }
+
+        const data = await response.json();
+        return data.resposta; // Retorna a resposta da API
+    } catch (error) {
+        throw new Error('Erro ao processar o prompt: ' + error.message);
+    }
 }

@@ -99,20 +99,20 @@ def index():
 # Rota para processar o prompt
 @app.route('/ragfci', methods=['POST'])
 def ragfci():
-    data = request.get_json()
-    prompt = data.get('prompt')
-    if not prompt:
-        return jsonify({"erro": "O campo 'prompt' é obrigatório."}), 400
+    try:
+        data = request.get_json()
+        prompt = data.get('prompt')
+        if not prompt:
+            return jsonify({"erro": "O campo 'prompt' é obrigatório."}), 400
 
-    print(f"Recebido prompt: {prompt}")
-    context = get_relevant_context(prompt)
-    rag_prompt = generate_rag_prompt(prompt, context)
-    resposta = generate_answer(rag_prompt)
-    print(f"Resposta gerada: {resposta}")
-    return jsonify({"resposta": resposta})
+        print(f"Recebido prompt: {prompt}")
+        context = get_relevant_context(prompt)
+        rag_prompt = generate_rag_prompt(prompt, context)
+        resposta = generate_answer(rag_prompt)
+        print(f"Resposta gerada: {resposta}")
+        return jsonify({"resposta": resposta})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
-    if __name__ == '__main__':
-    app.run(debug=False, host="0.0.0.0", port=int(os.environ.get('PORT', 5000)))
-    print("Servidor Flask iniciado com sucesso!")
-
+    app.run(debug=False, host="0.0.0.0", port=5000)
