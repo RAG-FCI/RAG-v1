@@ -31,7 +31,7 @@ genai.configure(api_key=GEMINI_API_KEY)
 VECTORSTORE_DIR = "./chroma_db"
 os.makedirs(VECTORSTORE_DIR, exist_ok=True)  # Garante que o diretório exista apenas localmente
 #EMBEDDING_MODEL = "paraphrase-MiniLM-L3-v2"  # Modelo mais leve
-EMDEDDING_MODEL = "distilbert-base-uncased"
+EMBEDDING_MODEL = "distilbert-base-uncased"
 embedding_function = HuggingFaceEmbeddings(model_name=EMBEDDING_MODEL)
 
 vectorstore = Chroma(persist_directory=VECTORSTORE_DIR, embedding_function=embedding_function)
