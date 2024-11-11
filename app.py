@@ -29,15 +29,19 @@ genai.configure(api_key=GEMINI_API_KEY)
 
 # Configuração do vetorstore
 VECTORSTORE_DIR = "./chroma_db"
-EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
+os.makedirs(VECTORSTORE_DIR, exist_ok=True)  # Garante que o diretório exista apenas localmente
+EMBEDDING_MODEL = "paraphrase-MiniLM-L3-v2"  # Modelo mais leve
 embedding_function = HuggingFaceEmbeddings(model_name=EMBEDDING_MODEL)
+
 vectorstore = Chroma(persist_directory=VECTORSTORE_DIR, embedding_function=embedding_function)
 
 # Função para carregar e processar PDFs
-def carregar_pdfs(diretorio):
+def carregar_pdfs(diretorio, limite=5):
     docs = []
-    for nome_arquivo in os.listdir(diretorio):
+    for i, nome_arquivo in enumerate(os.listdir(diretorio)):
         if nome_arquivo.endswith('.pdf'):
+            if i >= limite:  # Limita o número de PDFs carregados
+                break
             caminho_pdf = os.path.join(diretorio, nome_arquivo)
             with open(caminho_pdf, 'rb') as arquivo:
                 reader = PdfReader(arquivo)
@@ -45,12 +49,18 @@ def carregar_pdfs(diretorio):
                 docs.append(Document(page_content=texto_pdf))
     return docs
 
+
 # Processar PDFs e popular o vetorstore
 diretorio_pdfs = os.path.join('.', 'arquivos')
 docs = carregar_pdfs(diretorio_pdfs)
-text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=100)
+text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)  # Reduz tamanho
 split_docs = text_splitter.split_documents(docs)
-vectorstore.add_documents(split_docs)
+
+# Persistência condicional
+if not os.path.exists(VECTORSTORE_DIR):
+    vectorstore.add_documents(split_docs)
+    vectorstore.persist()
+
 
 # Função para gerar prompts
 def generate_rag_prompt(query, context, last_answer=""):
@@ -66,7 +76,7 @@ RESPOSTA:
 
 # Função para buscar contexto relevante
 def get_relevant_context(query):
-    search_results = vectorstore.similarity_search(query, k=6)
+    search_results = vectorstore.similarity_search(query, k=3)
     return "\n".join([result.page_content for result in search_results])
 
 # Função para gerar resposta
